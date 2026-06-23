@@ -32,20 +32,23 @@ export default function Hero({ onNavigate }) {
       p.style.animationDuration = `${dur}s`
       p.style.animationDelay = `${delay}s`
       p.style.background = colors[Math.floor(Math.random() * colors.length)]
-      p.style.boxShadow = `0 0 ${size * 2}px ${p.style.background}`
       container.appendChild(p)
       setTimeout(() => p.remove(), (dur + delay) * 1000)
     }
-    for (let i = 0; i < 40; i++) createParticle()
+    for (let i = 0; i < 15; i++) createParticle()
     interval = setInterval(() => {
       if (document.visibilityState === 'visible') createParticle()
-    }, 400)
+    }, 1200)
     return () => clearInterval(interval)
   }, [])
 
   // 3D Parallax on mouse move
   useEffect(() => {
+    let lastMove = 0
     const handleMouseMove = (e) => {
+      const now = performance.now()
+      if (now - lastMove < 50) return          // throttle to ~20fps
+      lastMove = now
       if (!heroRef.current || !contentRef.current) return
       const { innerWidth, innerHeight } = window
       const x = (e.clientX - innerWidth / 2) / (innerWidth / 2)
@@ -85,9 +88,14 @@ export default function Hero({ onNavigate }) {
   return (
     <section className="hero" id="hero" ref={heroRef}>
       <div className="hero__bg">
-        <div
-          className="hero__bg-image"
-          style={{ backgroundImage: `url(https://images.unsplash.com/photo-1562774053-701939374585?w=1600&q=80)` }}
+        <video
+          className="hero__bg-video"
+          src={`${import.meta.env.BASE_URL}videos/campus-scroll.mp4`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
         />
         <div ref={particlesRef} className="hero__particles"></div>
         <div className="hero__gradient"></div>
